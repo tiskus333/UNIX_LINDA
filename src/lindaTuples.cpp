@@ -14,23 +14,23 @@ LindaTuples::match(const RegexTuple &tuple) {
       }
       switch (tuple[i].operator_) {
       case EQ:
-        if ((*it)[i] != tuple[i].value_)
+        if (!((*it)[i] == tuple[i].value_))
           found = false;
         break;
       case GE:
-        if ((*it)[i] >= tuple[i].value_)
+        if (!((*it)[i] >= tuple[i].value_))
           found = false;
         break;
       case GT:
-        if ((*it)[i] > tuple[i].value_)
+        if (!((*it)[i] > tuple[i].value_))
           found = false;
         break;
       case LE:
-        if ((*it)[i] <= tuple[i].value_)
+        if (!((*it)[i] <= tuple[i].value_))
           found = false;
         break;
       case LT:
-        if ((*it)[i] < tuple[i].value_)
+        if (!((*it)[i] < tuple[i].value_))
           found = false;
         break;
       case ANY:
@@ -59,8 +59,8 @@ Tuple LindaTuples::input(const RegexTuple &tuple) {
     Tuple ret_tuple = *iter.value();
     tuples_.erase(iter.value());
     return ret_tuple;
-  }
-  return Tuple{"waiting"};
+  } else
+    return Tuple{"waiting"};
 }
 Tuple LindaTuples::read(const RegexTuple &tuple) {
   auto ret = match(tuple);
