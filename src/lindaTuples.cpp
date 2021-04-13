@@ -2,7 +2,7 @@
 
 std::optional<std::list<Tuple>::iterator>
 LindaTuples::match(const RegexTuple &tuple) {
-  bool found = false;
+  bool found = true;
   for (auto it = tuples_.begin(); it != tuples_.end(); ++it) {
     if (!((*it).size() == tuple.size()))
       continue;
@@ -34,9 +34,6 @@ LindaTuples::match(const RegexTuple &tuple) {
           found = false;
         break;
       case ANY:
-        break;
-      default:
-        found = false;
         break;
       }
       if (!found)

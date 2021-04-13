@@ -18,11 +18,15 @@ int main() {
     LindaRegex lr1("int:<2");
     LindaRegex lr2("float:<=-2.1");
     LindaRegex lr3("string:>=kupa");
-    RegexTuple t1{lr1, lr2, lr3};
+    RegexTuple rt1{lr1, lr2, lr3};
+    Tuple t1{1, 2.0f, "lupa"};
     Tuple t2{1, -3.0f, "lupa"};
     LindaTuples tuple_data;
+    tuple_data.output(t1);
     tuple_data.output(t2);
-    auto t = tuple_data.read(t1);
+    auto t = tuple_data.read(rt1);
+    printTuple(t);
+    t = tuple_data.read({{"int:==+1"}, {"float:*"}, {"string:*"}});
     printTuple(t);
 
   } catch (const char *ex) {
