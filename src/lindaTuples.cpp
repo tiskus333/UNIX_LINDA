@@ -1,7 +1,51 @@
 #include "lindaTuples.h"
 
-std::deque<Tuple>::iterator LindaTuples::match(const RegexTuple &str) {
-  return tuples_.begin();
+std::optional<std::list<Tuple>::iterator>
+LindaTuples::match(const RegexTuple &tuple) {
+  bool found = false;
+  for (auto it = tuples_.begin(); it != tuples_.end(); ++it) {
+    if (!((*it).size() == tuple.size()))
+      continue;
+    found = true;
+    for (size_t i = 0; i < (*it).size(); ++i) {
+      if ((*it)[i].index() != tuple[i].value_.index()) {
+        found = false;
+        break;
+      }
+      switch (tuple[i].operator_) {
+      case EQ:
+        if ((*it)[i] != tuple[i].value_)
+          found = false;
+        break;
+      case GE:
+        if ((*it)[i] >= tuple[i].value_)
+          found = false;
+        break;
+      case GT:
+        if ((*it)[i] > tuple[i].value_)
+          found = false;
+        break;
+      case LE:
+        if ((*it)[i] <= tuple[i].value_)
+          found = false;
+        break;
+      case LT:
+        if ((*it)[i] < tuple[i].value_)
+          found = false;
+        break;
+      case ANY:
+        break;
+      default:
+        found = false;
+        break;
+      }
+      if (!found)
+        break;
+    }
+    if (found)
+      return it;
+  }
+  return {};
 }
 void LindaTuples::parseInput() {}
 
@@ -9,5 +53,19 @@ bool LindaTuples::output(const Tuple &tuple) {
   tuples_.push_back(tuple);
   return true;
 }
-Tuple LindaTuples::input(const RegexTuple &tuple) { return Tuple{"testowy"}; }
-Tuple LindaTuples::read(const RegexTuple &tuple) { return Tuple{"testowy"}; }
+Tuple LindaTuples::input(const RegexTuple &tuple) {
+  auto iter = match(tuple);
+  if (iter.has_value()) {
+    Tuple ret_tuple = *iter.value();
+    tuples_.erase(iter.value());
+    return ret_tuple;
+  }
+  return Tuple{"waiting"};
+}
+Tuple LindaTuples::read(const RegexTuple &tuple) {
+  auto ret = match(tuple);
+  if (ret.has_value())
+    return *ret.value();
+  else
+    return Tuple{"waiting"};
+}
