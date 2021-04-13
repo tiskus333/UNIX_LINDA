@@ -1,7 +1,5 @@
 #include "lindaRegex.h"
 #include <regex>
-// regex to check correct format
-// ((int:)(((<|<=|>|>=|==)([+-]?\d+))|\*))|((float:)(((<|<=|>|>=|==)([+-]?\d+\.?\d*))|\*))|((string:)(((<|<=|>|>=|==)(.+))|\*))
 
 void LindaRegex::parse(const std::string &pattern) {
   std::regex correct_format_rgx(
@@ -18,24 +16,20 @@ void LindaRegex::parse(const std::string &pattern) {
   std::string value_s = base_match.suffix();
   parseOperand(operand);
   std::cout << type_s << "," << operand << "," << value_s << std::endl;
-  if (type_s == "string:") {
-    type_ = 0;
+  if (type_s == "string:")
     value_ = value_s;
-  } else if (type_s == "int:") {
-    type_ = 1;
+  else if (type_s == "int:")
     value_ = stoi(value_s);
-  } else if (type_s == "float:") {
-    type_ = 2;
+  else if (type_s == "float:")
     value_ = stof(value_s);
-  } else
+  else
     throw("INCORECT TYPE");
 }
 void LindaRegex::parseOperand(const std::string &pattern) {
   for (const auto &o : RegexOperatorsMap) {
     auto [key, value] = o;
-    if (pattern == value) {
+    if (pattern == value)
       operator_ = key;
-    }
   }
 }
 LindaRegex::LindaRegex(const std::string &pattern) { parse(pattern); }

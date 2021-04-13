@@ -47,7 +47,6 @@ LindaTuples::match(const RegexTuple &tuple) {
   }
   return {};
 }
-void LindaTuples::parseInput() {}
 
 bool LindaTuples::output(const Tuple &tuple) {
   tuples_.push_back(tuple);

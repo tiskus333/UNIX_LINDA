@@ -10,11 +10,10 @@ using Tuple = std::vector<std::variant<std::string, int, float>>;
 class LindaTuples {
 
 private:
+  std::list<Tuple> tuples_;
   std::optional<std::list<Tuple>::iterator> match(const RegexTuple &str);
-  void parseInput();
 
 public:
-  std::list<Tuple> tuples_;
   bool output(const Tuple &tuple);
   Tuple input(const RegexTuple &tuple);
   Tuple read(const RegexTuple &tuple);

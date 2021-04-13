@@ -13,7 +13,6 @@ static const std::map<RegexOperatorsEnum, const char *> RegexOperatorsMap{
     {ANY, "*"}, {EQ, "=="}, {LT, "<"}, {LE, "<="}, {GT, ">"}, {GE, ">="}};
 class LindaRegex {
 public:
-  int type_ = 0;
   RegexOperatorsEnum operator_ = ANY;
   std::variant<std::string, int, float> value_;
   LindaRegex(const std::string &pattern);
