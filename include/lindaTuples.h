@@ -14,6 +14,7 @@ private:
   std::optional<std::list<Tuple>::iterator> match(const RegexTuple &str);
 
 public:
+  int getTuplesAmount();
   bool output(const Tuple &tuple);
   Tuple input(const RegexTuple &tuple);
   Tuple read(const RegexTuple &tuple);
