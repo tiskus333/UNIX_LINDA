@@ -1,9 +1,10 @@
 #ifndef LINDA_REGEX_H
 #define LINDA_REGEX_H
 
-#include <deque>
 #include <iostream>
 #include <map>
+#include <regex>
+#include <stdexcept>
 #include <string>
 #include <variant>
 #include <vector>
@@ -17,14 +18,14 @@ public:
   std::variant<std::string, int, float> value_ = "";
   /**
    * @brief Construct a new Linda Regex object
-   * 
-   * @param pattern 
+   *
+   * @param pattern
    */
   LindaRegex(const std::string &pattern);
   /**
    * @brief parse
-   * 
-   * @param pattern 
+   *
+   * @param pattern
    */
   void parse(const std::string &pattern);
   void parseOperand(const std::string &pattern);
