@@ -79,6 +79,31 @@ Tuple LindaTuples::read(const RegexTuple &tuple)
     return Tuple{"waiting"};
 }
 
-int LindaTuples::getTuplesAmount(){
+size_t LindaTuples::getTuplesAmount()
+{
   return tuples_.size();
+}
+
+bool LindaTuples::deserialize(const char *address)
+{
+  return true;
+}
+
+bool LindaTuples::serialize(const char *address, size_t max_size)
+{
+  std::stringstream serialized_stream;
+  for (const auto &t : tuples_)
+  {
+    serialized_stream << t.size() << ':';
+    for (const auto &v : t)
+    {
+      serialized_stream << v.index() << ':' << v;
+    }
+    std::string serialized_tuple = serialized_stream.str();
+    if (serialized_tuple.size() >= 512)
+      throw(std::invalid_argument("MAX TUPLE SIZE IS EXCEEDED"));
+
+    // write to shared memory
+  }
+  return true;
 }

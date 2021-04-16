@@ -7,23 +7,6 @@
 //VERY IMPORTANT - include this last
 #include <boost/test/unit_test.hpp>
 
-template <typename T0, typename... Ts>
-std::ostream &operator<<(std::ostream &s, std::variant<T0, Ts...> const &v)
-{
-    std::visit([&](auto &&arg) { s << arg; }, v);
-    return s;
-}
-
-void printTuple(const Tuple &tuple)
-{
-    std::cout << "Tuple = {";
-    for (auto &i : tuple)
-    {
-        std::cout << i << ',';
-    }
-    std::cout << "\b}\n";
-}
-
 // ------------- Tests Follow --------------
 BOOST_AUTO_TEST_SUITE(LindaRegexTesting_IncorrectCases)
 
@@ -151,7 +134,7 @@ BOOST_AUTO_TEST_CASE(TestOutputAndReadEmptyTupleWithEmptyRegex)
     RegexTuple testRegexTuple{};
     auto testRead = tuples.read(testRegexTuple);
     BOOST_CHECK(testRead.empty());
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputAndInputEmptyTupleWithEmptyRegex)
@@ -162,7 +145,7 @@ BOOST_AUTO_TEST_CASE(TestOutputAndInputEmptyTupleWithEmptyRegex)
     RegexTuple testRegexTuple{};
     auto testRead = tuples.input(testRegexTuple);
     BOOST_CHECK(testRead.empty());
-    BOOST_CHECK(tuples.getTuplesAmount() == 0);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)0);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputAndReadEmptyTupleWithUnmatchingRegex)
@@ -201,7 +184,7 @@ BOOST_AUTO_TEST_CASE(TestOutputAndReadTupleWithMatchingRegex)
     auto testRead = tuples.input(testRegexTuple);
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<int>(testRead[0]) == 1);
-    BOOST_CHECK(tuples.getTuplesAmount() == 0);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)0);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputAndInputTupleWithMatchingRegex)
@@ -214,7 +197,7 @@ BOOST_AUTO_TEST_CASE(TestOutputAndInputTupleWithMatchingRegex)
     auto testRead = tuples.read(testRegexTuple);
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<int>(testRead[0]) == 1);
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputMultipleTuples)
@@ -224,7 +207,7 @@ BOOST_AUTO_TEST_CASE(TestOutputMultipleTuples)
     Tuple testTuple2{2};
     tuples.output(testTuple1);
     tuples.output(testTuple2);
-    BOOST_CHECK(tuples.getTuplesAmount()==2);
+    BOOST_CHECK(tuples.getTuplesAmount()==(size_t)2);
 }
 
 BOOST_AUTO_TEST_CASE(TestReadMultipleOutputsWithOnlyOneMatchingRegex){
@@ -238,7 +221,7 @@ BOOST_AUTO_TEST_CASE(TestReadMultipleOutputsWithOnlyOneMatchingRegex){
     auto testRead = tuples.read(testRegexTuple);
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<int>(testRead[0]) == 3);
-    BOOST_CHECK(tuples.getTuplesAmount() == 2);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)2);
 }
 
 BOOST_AUTO_TEST_CASE(TestInputMultipleOutputsWithMultipleOutputsMatchingRegex){
@@ -255,7 +238,7 @@ BOOST_AUTO_TEST_CASE(TestInputMultipleOutputsWithMultipleOutputsMatchingRegex){
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<int>(testRead[0]) == 1);
     BOOST_CHECK(std::get<std::string>(testRead[1]) == "first");
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_DifferentTypes){
@@ -268,7 +251,7 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_DifferentTypes){
     auto testRead = tuples.input(testRegexTuple);
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<std::string>(testRead[0])=="waiting");
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
@@ -281,7 +264,7 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
     auto testRead = tuples.input(testRegexTuple);
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<std::string>(testRead[0])=="waiting");
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
