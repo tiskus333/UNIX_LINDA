@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project(linda)
 set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wall -O2 )
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 file(GLOB TARGET_SRC "./src/*.cpp")
 ##set build directory
@@ -16,6 +18,7 @@ ${CMAKE_HOME_DIRECTORY}/include
 )
 
 add_executable(LINDA ${TARGET_SRC})
+target_link_libraries(LINDA Threads::Threads)
 
 #Add tests 
 list(FILTER TARGET_SRC EXCLUDE REGEX /*/main.cpp) 
