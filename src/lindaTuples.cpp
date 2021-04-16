@@ -121,6 +121,9 @@ bool LindaTuples::deserialize(const char *address) {
 bool LindaTuples::serialize(char *const data, size_t max_size) {
   int offset = 0;
   for (const auto &t : tuples_) {
+    if (++offset > MAX_TUPLE_NUMBER)
+      break;
+
     std::stringstream serialized_stream;
     for (const auto &v : t) {
       serialized_stream << v.index() << ':' << v << ';';
@@ -128,13 +131,11 @@ bool LindaTuples::serialize(char *const data, size_t max_size) {
     std::string serialized_tuple = serialized_stream.str();
     if (serialized_tuple.size() >= MAX_TUPLE_SIZE)
       throw(std::invalid_argument("MAX TUPLE SIZE IS EXCEEDED"));
-
     char tuple_char[MAX_TUPLE_SIZE];
     memset(tuple_char, 0, sizeof(tuple_char));
     strncpy(tuple_char, serialized_tuple.c_str(), serialized_tuple.size());
     std::cout << tuple_char << std::endl;
-    strcpy(data + offset, tuple_char);
-    offset += MAX_TUPLE_SIZE;
+    strcpy(data + offset * MAX_TUPLE_SIZE, tuple_char);
   }
   return true;
 }
