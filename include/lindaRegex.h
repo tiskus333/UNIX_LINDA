@@ -15,7 +15,17 @@ class LindaRegex {
 public:
   RegexOperatorsEnum operator_ = ANY;
   std::variant<std::string, int, float> value_ = "";
+  /**
+   * @brief Construct a new Linda Regex object
+   * 
+   * @param pattern 
+   */
   LindaRegex(const std::string &pattern);
+  /**
+   * @brief parse
+   * 
+   * @param pattern 
+   */
   void parse(const std::string &pattern);
   void parseOperand(const std::string &pattern);
 };
