@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <string.h>
 
+#include <iostream>
+
 class SharedMemoryHandler
 {
 private:
@@ -29,6 +31,7 @@ private:
 
 public:
     void create(const char *name);
+    SharedMemory *open(const char *name);
 };
 
 #endif
