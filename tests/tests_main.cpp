@@ -130,48 +130,22 @@ BOOST_AUTO_TEST_CASE(TestOutputAndReadEmptyTupleWithEmptyRegex)
 {
     LindaTuples tuples;
     Tuple testTuple{};
-    tuples.output(testTuple);
+    BOOST_REQUIRE_THROW(tuples.output(testTuple),std::invalid_argument);
     RegexTuple testRegexTuple{};
     auto testRead = tuples.read(testRegexTuple);
-    BOOST_CHECK(testRead.empty());
-    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
+    BOOST_CHECK(std::get<std::string>(testRead[0])=="waiting");
+    BOOST_CHECK(tuples.getTuplesAmount() == (size_t)0);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputAndInputEmptyTupleWithEmptyRegex)
 {
-    LindaTuples tuples;
+LindaTuples tuples;
     Tuple testTuple{};
-    tuples.output(testTuple);
+    BOOST_REQUIRE_THROW(tuples.output(testTuple),std::invalid_argument);
     RegexTuple testRegexTuple{};
     auto testRead = tuples.input(testRegexTuple);
-    BOOST_CHECK(testRead.empty());
+    BOOST_CHECK(std::get<std::string>(testRead[0])=="waiting");
     BOOST_CHECK(tuples.getTuplesAmount() == (size_t)0);
-}
-
-BOOST_AUTO_TEST_CASE(TestOutputAndReadEmptyTupleWithUnmatchingRegex)
-{
-    LindaTuples tuples;
-    Tuple testTuple{};
-    tuples.output(testTuple);
-    LindaRegex regex("int:==2");
-    RegexTuple testRegexTuple{regex};
-    auto testRead = tuples.read(testRegexTuple);
-    BOOST_REQUIRE(!testRead.empty());
-    BOOST_CHECK(std::get<std::string>(testRead[0]) == "waiting");
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
-}
-
-BOOST_AUTO_TEST_CASE(TestOutputAndInputEmptyTupleWithUnmatchingRegex)
-{
-    LindaTuples tuples;
-    Tuple testTuple{};
-    tuples.output(testTuple);
-    LindaRegex regex("int:==2");
-    RegexTuple testRegexTuple{regex};
-    auto testRead = tuples.input(testRegexTuple);
-    BOOST_REQUIRE(!testRead.empty());
-    BOOST_CHECK(std::get<std::string>(testRead[0]) == "waiting");
-    BOOST_CHECK(tuples.getTuplesAmount() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(TestOutputAndReadTupleWithMatchingRegex)

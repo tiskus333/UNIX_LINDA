@@ -21,17 +21,23 @@
 class SharedMemoryHandler
 {
 private:
-    class SharedMemory
-    {
-        public:
-        sem_t sem_read;
-        sem_t sem_write;
-        unsigned char tupleSpace[MAX_TUPLE_NUMBER * MAX_TUPLE_SIZE];
-    } sh_m;
+    static SharedMemoryHandler *instance;
+    SharedMemoryHandler();
 
 public:
+    class SharedMemory
+    {
+    public:
+        sem_t sem_is_resource_reserved; // blocks entering of further readers
+        sem_t sem_counting_readers;     //used to check number of readers
+        sem_t sem_waiting_for_changes;  //when when needed tuple is not found we are waiting on this one
+        unsigned char tupleSpace[MAX_TUPLE_NUMBER * MAX_TUPLE_SIZE];
+    };
+    static SharedMemoryHandler *getInstance();
     void create(const char *name);
     SharedMemory *open(const char *name);
 };
+
+SharedMemoryHandler *SharedMemoryHandler::instance = 0;
 
 #endif
