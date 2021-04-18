@@ -16,17 +16,21 @@ private:
     //semaphores
     sem_t *sem_is_resource_reserved; // blocks entering of further readers
     sem_t *sem_counting_readers;     //used to check number of readers
-    sem_t *sem_waiting_for_changes;  //when when needed tuple is not found we are waiting on this one
+    sem_t *sem_waiting_for_changes;  //when when needed tuple is not found we are semaphore_value on this one
 
     void notify_waiting_for_changes()
     {
-        int waiting;
-        sem_getvalue(sem_waiting_for_changes, &waiting);
-        while (waiting >= 1)
+        int semaphore_value;
+        sem_getvalue(sem_waiting_for_changes, &semaphore_value);
+        while (semaphore_value == 0)
         {
             sem_post(sem_waiting_for_changes);
-            sem_getvalue(sem_waiting_for_changes, &waiting);
+            sleep(1);//TODO remove it
+            sem_getvalue(sem_waiting_for_changes, &semaphore_value);
         }
+        if (sem_trywait(sem_waiting_for_changes))
+                cout << "ERROR 0\n";
+        
     }
 
     bool search_for_data(char num) //TODO search for tuple and instead of dealing with chars edit tuples
@@ -42,7 +46,7 @@ private:
 
     void save_data(char num)
     {
-        cout << "written\n";
+        cout << "writing "<<(int)num<<"\n";
         space[0] = num;
     }
 
@@ -60,6 +64,7 @@ public:
         {
             cout << "sleeping in write\n";
             sleep(1);
+            sem_getvalue(sem_counting_readers, &readers_left);
         }
         save_data(num);
 
@@ -82,7 +87,9 @@ public:
                 cout << "ERROR 1\n";
 
             sem_wait(sem_waiting_for_changes);
+            sem_wait(sem_is_resource_reserved);
             sem_post(sem_counting_readers);
+            sem_post(sem_is_resource_reserved);
             found_searched_element = search_for_data(num);
         }
         cout << "reading: "<<int(num)<<"\n";
@@ -113,7 +120,7 @@ public:
 
             found_searched_element = search_for_data(num);
         }
-        cout << "deleted\n";
+        cout << "deleted"<<int(num)<<"\n";
         save_data(0);
 
         sem_post(sem_is_resource_reserved);
