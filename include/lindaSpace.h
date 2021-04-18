@@ -29,11 +29,28 @@ private:
         }
     }
 
+    bool search_for_data(char num) //TODO search for tuple and instead of dealing with chars edit tuples
+    {
+        if(space[0] == num)
+        {
+            cout << "data found\n";
+            return true;
+        }
+        cout << "data not found\n";
+        return false;
+    }
+
+    void save_data(char num)
+    {
+        cout << "written\n";
+        space[0] = num;
+    }
+
 public:
     LindaSpace(/* args */);
     ~LindaSpace();
 
-    void write()
+    void write(char num)
     {
 
         sem_wait(sem_is_resource_reserved);
@@ -44,24 +61,21 @@ public:
             cout << "sleeping in write\n";
             sleep(1);
         }
-
-        cout << "written\n";
+        save_data(num);
 
         notify_waiting_for_changes();
 
         sem_post(sem_is_resource_reserved);
     }
 
-    void read()
+    void read(char num)
     {
 
         sem_wait(sem_is_resource_reserved);
         sem_post(sem_counting_readers);
         sem_post(sem_is_resource_reserved);
 
-        bool found_searched_element = false;
-        //wczytaj_i_przeszukaj_dane();
-
+        bool found_searched_element = search_for_data(num);
         while (!found_searched_element)
         {
             if (sem_trywait(sem_counting_readers))
@@ -69,15 +83,15 @@ public:
 
             sem_wait(sem_waiting_for_changes);
             sem_post(sem_counting_readers);
-            found_searched_element = true;
+            found_searched_element = search_for_data(num);
         }
-        cout << "reading\n";
+        cout << "reading: "<<int(num)<<"\n";
 
         if (sem_trywait(sem_counting_readers))
             cout << "ERROR 2\n";
     }
 
-    void remove()
+    void remove(char num)
     {
         sem_wait(sem_is_resource_reserved);
         int readers_left;
@@ -88,8 +102,7 @@ public:
             sleep(1);
         }
 
-        bool found_searched_element = false;
-        //wczytaj_i_przeszukaj_dane();
+        bool found_searched_element = search_for_data(num);
 
         while (!found_searched_element)
         {
@@ -98,10 +111,10 @@ public:
             sem_wait(sem_waiting_for_changes);
             sem_wait(sem_is_resource_reserved);
 
-            found_searched_element = true;
-            //wczytaj_i_przeszukaj_dane();
+            found_searched_element = search_for_data(num);
         }
         cout << "deleted\n";
+        save_data(0);
 
         sem_post(sem_is_resource_reserved);
     }
