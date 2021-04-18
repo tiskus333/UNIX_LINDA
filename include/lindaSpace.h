@@ -37,10 +37,10 @@ private:
     {
         if(space[0] == num)
         {
-            cout << "data found\n";
+            cout << "data"<<(int)num<<" found\n";
             return true;
         }
-        cout << "data not found\n";
+        cout << "data "<<(int)num<<" not found\n";
         return false;
     }
 
