@@ -27,7 +27,7 @@ public:
    * @brief Get the Tuples Amount object
    * 
    * @return size_t 
-   */t
+   */
   size_t getTuplesAmount();
   /**
    * @brief - writes serialized tuple list to tuplespace
@@ -64,7 +64,7 @@ public:
    * @return true 
    * @return false - failed
    */
-  bool serialize(const char *address,std:: size_t max_size);
+  bool serialize(const char *address, std::size_t max_size);
 
   /**
    * @brief - reads (initializes or updates) list of tuples

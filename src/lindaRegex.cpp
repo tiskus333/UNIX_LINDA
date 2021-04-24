@@ -55,7 +55,7 @@ LindaRegex::LindaRegex(const std::string &pattern)
   {
     parse(pattern);
   }
-  catch (std::invalid_argument e)
+  catch (std::invalid_argument &e)
   {
     throw e;
   }

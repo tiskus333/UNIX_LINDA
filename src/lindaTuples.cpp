@@ -79,6 +79,7 @@ Tuple LindaTuples::read(const RegexTuple &tuple)
     return Tuple{"waiting"};
 }
 
-int LindaTuples::getTuplesAmount(){
+size_t LindaTuples::getTuplesAmount()
+{
   return tuples_.size();
 }
