@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_compile_options(-Wall -O2)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-
+# set(CMAKE_CXX_CLANG_TIDY "clang-tidy; -checks=-*,-fuchsia*,bugprone*,cert*,clang-analyzer*,cppcoreguidelines*,google*,hicpp*,-hicpp-signed-bitwise,llvm*,misc*,modernize*,-modernize-use-trailing-return-type,performance*,readability*,-*avoid-c-arrays,-*-braces-around-statements,-*array*-decay")
 file(GLOB TARGET_SRC "./src/*.cpp")
 ##set build directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)

@@ -1,6 +1,6 @@
 #include "lindaTuples.h"
-#define MAX_TUPLE_SIZE 128
-#define MAX_TUPLE_NUMBER 10
+constexpr int64_t MAX_TUPLE_SIZE = 128;
+constexpr int64_t MAX_TUPLE_NUMBER = 10;
 std::optional<std::list<Tuple>::iterator>
 LindaTuples::match(const RegexTuple &tuple) {
   bool found = true;
@@ -47,7 +47,7 @@ LindaTuples::match(const RegexTuple &tuple) {
 }
 
 bool LindaTuples::output(const Tuple &tuple) {
-  if (tuple.size() == 0)
+  if (tuple.empty())
     throw std::invalid_argument("CANNOT WRITE EMPTY TUPLE!");
   tuples_.push_back(tuple);
   return true;
@@ -73,13 +73,13 @@ Tuple LindaTuples::read(const RegexTuple &tuple) {
 
 size_t LindaTuples::getTuplesAmount() { return tuples_.size(); }
 
-bool LindaTuples::deserialize(const char *address) {
+bool LindaTuples::deserialize(const char *data) {
   tuples_.clear();
   std::variant<std::string, int, float> value;
   char single_tuple[MAX_TUPLE_SIZE];
   for (int i = 0; i < MAX_TUPLE_NUMBER; ++i) {
     memset(single_tuple, 0, sizeof(single_tuple));
-    strcpy(single_tuple, address + i * MAX_TUPLE_SIZE);
+    strcpy(single_tuple, data + i * MAX_TUPLE_SIZE);
 
     std::string str(single_tuple);
 

@@ -20,7 +20,7 @@ private:
    * @param str
    * @return std::optional<std::list<Tuple>::iterator>
    */
-  std::optional<std::list<Tuple>::iterator> match(const RegexTuple &str);
+  std::optional<std::list<Tuple>::iterator> match(const RegexTuple &tuple);
 
 public:
   /**
