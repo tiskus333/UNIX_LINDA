@@ -7,13 +7,10 @@ SharedMemoryHandler *SharedMemoryHandler::getInstance() {
     instance = new SharedMemoryHandler;
   return instance;
 }
-SharedMemoryHandler::~SharedMemoryHandler() {
-  delete instance;
-  shm_unlink(shm_name);
-}
+SharedMemoryHandler::~SharedMemoryHandler() { delete instance; }
 
 void SharedMemoryHandler::create(const char *name) {
-  shm_name = name;
+  shm_unlink(name);
   int openedShm = shm_open(name, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
   if (openedShm == -1) {
     throw "Cannot create shared memory";
@@ -48,8 +45,9 @@ void SharedMemoryHandler::create(const char *name) {
     throw "Cannot init conditional variable";
 
   /* Clean up. */
-  // pthread_cond_destroy(pcond);
+  // pthread_cond_destroy(cond_waiting_for_changes);
   // pthread_condattr_destroy(&attrcond);
+  // delete shmMapped->cond_waiting_for_changes
 }
 
 SharedMemoryHandler::SharedMemory *SharedMemoryHandler::open(const char *name) {

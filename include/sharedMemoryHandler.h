@@ -24,7 +24,6 @@ private:
   static SharedMemoryHandler *instance;
   SharedMemoryHandler() = default;
   ~SharedMemoryHandler();
-  const char *shm_name;
 
 public:
   class SharedMemory {

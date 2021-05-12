@@ -4,7 +4,6 @@
 int main() {
   try {
     const char *mem_name = "/shm";
-    shm_unlink(mem_name);
     SharedMemoryHandler::getInstance()->create(mem_name);
     char data[10 * 128];
     memset(data, 0, sizeof(data));
