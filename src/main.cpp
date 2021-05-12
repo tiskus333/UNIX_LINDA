@@ -3,7 +3,9 @@
 
 int main() {
   try {
-    SharedMemoryHandler::getInstance()->create("pamiec");
+    const char *mem_name = "/shm";
+    shm_unlink(mem_name);
+    SharedMemoryHandler::getInstance()->create(mem_name);
     char data[10 * 128];
     memset(data, 0, sizeof(data));
     LindaTuples l;
@@ -18,5 +20,7 @@ int main() {
     std::cout << e.what() << std::endl;
   } catch (const char *e) {
     std::cout << e << std::endl;
+  } catch (...) {
+    std::cout << "ERROR";
   }
 }

@@ -7,10 +7,13 @@ SharedMemoryHandler *SharedMemoryHandler::getInstance() {
     instance = new SharedMemoryHandler;
   return instance;
 }
-SharedMemoryHandler::~SharedMemoryHandler() { delete instance; }
+SharedMemoryHandler::~SharedMemoryHandler() {
+  delete instance;
+  shm_unlink(shm_name);
+}
 
 void SharedMemoryHandler::create(const char *name) {
-
+  shm_name = name;
   int openedShm = shm_open(name, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
   if (openedShm == -1) {
     throw "Cannot create shared memory";
@@ -32,15 +35,16 @@ void SharedMemoryHandler::create(const char *name) {
     throw "Cannot init sem_counting_readers";
   }
 
-  if (sem_init(&shmMapped->sem_waiting_for_changes, 1, 0) == -1) {
-    throw "Cannot init sem_waiting_for_changes";
-  }
   if (pthread_condattr_init(&shmMapped->attrcond) != 0)
     throw "Cannot init conditional variable attribute";
 
-  pthread_condattr_setpshared(&shmMapped->attrcond, PTHREAD_PROCESS_SHARED);
+  if (pthread_condattr_setpshared(&shmMapped->attrcond,
+                                  PTHREAD_PROCESS_SHARED) != 0)
+    throw "Cannot share conditional variable";
 
-  if (pthread_cond_init(shmMapped->pcond, &shmMapped->attrcond) != 0)
+  shmMapped->cond_waiting_for_changes = new pthread_cond_t;
+  if (pthread_cond_init(shmMapped->cond_waiting_for_changes,
+                        &shmMapped->attrcond) != 0)
     throw "Cannot init conditional variable";
 
   /* Clean up. */
