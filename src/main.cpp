@@ -1,7 +1,9 @@
 #include "lindaTuples.h"
+#include "sharedMemoryHandler.h"
 
 int main() {
   try {
+    SharedMemoryHandler::getInstance()->create("pamiec");
     char data[10 * 128];
     memset(data, 0, sizeof(data));
     LindaTuples l;
@@ -14,5 +16,7 @@ int main() {
     std::cout << std::endl << (int)l.getTuplesAmount() << std::endl;
   } catch (const std::exception &e) {
     std::cout << e.what() << std::endl;
+  } catch (const char *e) {
+    std::cout << e << std::endl;
   }
 }
