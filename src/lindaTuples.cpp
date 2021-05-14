@@ -119,9 +119,9 @@ bool LindaTuples::deserialize(const char *address) {
 }
 
 bool LindaTuples::serialize(char *const data, size_t max_size) {
-  int offset = 0;
+  int offset = -1;
   for (const auto &t : tuples_) {
-    if (++offset > MAX_TUPLE_NUMBER)
+    if (++offset >= MAX_TUPLE_NUMBER)
       break;
 
     std::stringstream serialized_stream;
