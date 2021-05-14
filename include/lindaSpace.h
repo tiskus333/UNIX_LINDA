@@ -16,21 +16,12 @@ private:
     //semaphores
     sem_t *sem_is_resource_reserved; // blocks entering of further readers
     sem_t *sem_counting_readers;     //used to check number of readers
-    sem_t *sem_waiting_for_changes;  //when when needed tuple is not found we are semaphore_value on this one
+    // when when needed tuple is not found we are semaphore_value on this one
+    pthread_cond_t *cond_waiting_for_changes;
+    pthread_mutex_t *mutex_waiting_for_changes;
 
-    void notify_waiting_for_changes()
-    {
-        int semaphore_value;
-        sem_getvalue(sem_waiting_for_changes, &semaphore_value);
-        while (semaphore_value == 0)
-        {
-            sem_post(sem_waiting_for_changes);
-            sleep(1);//TODO remove it
-            sem_getvalue(sem_waiting_for_changes, &semaphore_value);
-        }
-        if (sem_trywait(sem_waiting_for_changes))
-                cout << "ERROR 0\n";
-        
+    void notify_waiting_for_changes() {
+      pthread_cond_broadcast(cond_waiting_for_changes);
     }
 
     bool search_for_data(char num) //TODO search for tuple and instead of dealing with chars edit tuples
@@ -86,7 +77,8 @@ public:
             if (sem_trywait(sem_counting_readers))
                 cout << "ERROR 1\n";
 
-            sem_wait(sem_waiting_for_changes);
+            pthread_cond_wait(cond_waiting_for_changes,
+                              mutex_waiting_for_changes);
             sem_wait(sem_is_resource_reserved);
             sem_post(sem_counting_readers);
             sem_post(sem_is_resource_reserved);
@@ -115,7 +107,8 @@ public:
         {
             sem_post(sem_is_resource_reserved);
 
-            sem_wait(sem_waiting_for_changes);
+            pthread_cond_wait(cond_waiting_for_changes,
+                              mutex_waiting_for_changes);
             sem_wait(sem_is_resource_reserved);
 
             found_searched_element = search_for_data(num);
@@ -133,11 +126,13 @@ LindaSpace::LindaSpace(/* args */)
     space = new char[space_size];
     sem_is_resource_reserved = new sem_t;
     sem_counting_readers = new sem_t;
-    sem_waiting_for_changes = new sem_t;
+    cond_waiting_for_changes = new pthread_cond_t;
+    *cond_waiting_for_changes = PTHREAD_COND_INITIALIZER;
+    mutex_waiting_for_changes = new pthread_mutex_t;
+    *mutex_waiting_for_changes = PTHREAD_MUTEX_INITIALIZER;
 
     sem_init(sem_is_resource_reserved, 0, 1);
     sem_init(sem_counting_readers, 0, 0);
-    sem_init(sem_waiting_for_changes, 0, 0);
 }
 
 LindaSpace::~LindaSpace()
