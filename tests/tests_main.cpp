@@ -3,7 +3,9 @@
 //Define our Module name (prints at testing)
 #define BOOST_TEST_MODULE basic_test
 #include <string>
+#include <thread>
 #include "lindaTuples.h"
+#include "lindaSpace.h"
 //VERY IMPORTANT - include this last
 #include <boost/test/unit_test.hpp>
 
@@ -239,6 +241,22 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
     BOOST_REQUIRE(!testRead.empty());
     BOOST_CHECK(std::get<std::string>(testRead[0])=="waiting");
     BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
+}
+
+BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(5))
+{
+    LindaSpace ls;
+
+    std::thread t3(&LindaSpace::remove, &ls, 10);
+    std::thread t2(&LindaSpace::write, &ls, 10);
+    sleep(1);
+    std::thread t1(&LindaSpace::read, &ls, 10);
+    std::thread t4(&LindaSpace::write, &ls, 10);
+
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
