@@ -30,6 +30,7 @@ public:
   public:
     sem_t sem_is_resource_reserved; // blocks entering of further readers
     sem_t sem_counting_readers;     // used to check number of readers
+    pthread_mutex_t cond_mutex;     // mutex fo conditional variable
     pthread_cond_t
         *cond_waiting_for_changes; // waiting on this one for new tuples
     pthread_condattr_t attrcond;

@@ -31,6 +31,9 @@ void SharedMemoryHandler::create(const char *name) {
   if (sem_init(&shmMapped->sem_counting_readers, 1, 1) == -1) {
     throw "Cannot init sem_counting_readers";
   }
+  if (pthread_mutex_init(&shmMapped->cond_mutex, NULL) == -1) {
+    throw "Cannot init mutex";
+  }
 
   if (pthread_condattr_init(&shmMapped->attrcond) != 0)
     throw "Cannot init conditional variable attribute";
