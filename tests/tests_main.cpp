@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
 
 BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(5))
 {
-    LindaSpace ls;
+    LindaSpace ls(true);
 
     std::thread t3(&LindaSpace::remove, &ls, 10);
     std::thread t2(&LindaSpace::write, &ls, 10);

@@ -129,7 +129,7 @@ public:
     }
 };
 
-LindaSpace::LindaSpace(bool debug = true)
+LindaSpace::LindaSpace(bool debug = false)
 {
     space_size = 100;
     space = new char[space_size];
