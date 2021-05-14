@@ -9,6 +9,7 @@ using namespace std;
 class LindaSpace
 {
 private:
+    bool debug;
     //exchange space
     char *space;
     size_t space_size;
@@ -20,29 +21,33 @@ private:
     pthread_cond_t *cond_waiting_for_changes;
     pthread_mutex_t *mutex_waiting_for_changes;
 
-    void notify_waiting_for_changes() {
-      pthread_cond_broadcast(cond_waiting_for_changes);
+    void notify_waiting_for_changes()
+    {
+        pthread_cond_broadcast(cond_waiting_for_changes);
     }
 
     bool search_for_data(char num) //TODO search for tuple and instead of dealing with chars edit tuples
     {
-        if(space[0] == num)
+        if (space[0] == num)
         {
-            cout << "data"<<(int)num<<" found\n";
+            if (debug)
+                cout << "data" << (int)num << " found\n";
             return true;
         }
-        cout << "data "<<(int)num<<" not found\n";
+        if (debug)
+            cout << "data " << (int)num << " not found\n";
         return false;
     }
 
     void save_data(char num)
     {
-        cout << "writing "<<(int)num<<"\n";
+        if (debug)
+            cout << "writing " << (int)num << "\n";
         space[0] = num;
     }
 
 public:
-    LindaSpace(/* args */);
+    LindaSpace(bool debug);
     ~LindaSpace();
 
     void write(char num)
@@ -53,7 +58,8 @@ public:
         sem_getvalue(sem_counting_readers, &readers_left);
         while (readers_left != 0)
         {
-            cout << "sleeping in write\n";
+            if (debug)
+                cout << "sleeping in write\n";
             sleep(1);
             sem_getvalue(sem_counting_readers, &readers_left);
         }
@@ -84,7 +90,8 @@ public:
             sem_post(sem_is_resource_reserved);
             found_searched_element = search_for_data(num);
         }
-        cout << "reading: "<<int(num)<<"\n";
+        if (debug)
+            cout << "reading: " << int(num) << "\n";
 
         if (sem_trywait(sem_counting_readers))
             cout << "ERROR 2\n";
@@ -97,7 +104,8 @@ public:
         sem_getvalue(sem_counting_readers, &readers_left);
         while (readers_left != 0)
         {
-            cout << "sleeping in write\n";
+            if (debug)
+                cout << "sleeping in write\n";
             sleep(1);
         }
 
@@ -113,14 +121,15 @@ public:
 
             found_searched_element = search_for_data(num);
         }
-        cout << "deleted"<<int(num)<<"\n";
+        if (debug)
+            cout << "deleted" << int(num) << "\n";
         save_data(0);
 
         sem_post(sem_is_resource_reserved);
     }
 };
 
-LindaSpace::LindaSpace(/* args */)
+LindaSpace::LindaSpace(bool debug = true)
 {
     space_size = 100;
     space = new char[space_size];
