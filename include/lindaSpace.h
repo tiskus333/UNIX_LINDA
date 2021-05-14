@@ -105,8 +105,9 @@ public:
         while (readers_left != 0)
         {
             if (debug)
-                cout << "sleeping in write\n";
-            sleep(1);
+                cout << "sleeping in remove\n";
+            sleep(1); //TODO remove sleeps
+            sem_getvalue(sem_counting_readers, &readers_left);
         }
 
         bool found_searched_element = search_for_data(num);
