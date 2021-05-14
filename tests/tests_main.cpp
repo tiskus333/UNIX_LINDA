@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
     BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
-BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(5))
+BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(30))
 {
     LindaSpace ls(true);
     Tuple testTuple{1};
