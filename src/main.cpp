@@ -10,79 +10,55 @@
 #include <string>
 #include <vector>
 
-int parse_input_data(char* const *data, int length, LindaSpace ls) {
-  int c;
+int parse_arguments(char str[], LindaSpace ls) {
 
-  while((c = getopt(length, data, "s:i:f:")) != -1) {
-    switch(c) {
-      case 's':
-      {
-        char* value = optarg;
-        Tuple string_tuple{value};
-        ls.write(string_tuple);
-        break;
-      }
-      case 'i':
-      {
-        char* value = optarg;
-        int i;
-        try {
-          i = stoi(value);
-        } catch(const std::exception &e) {
-          std::cout << e.what() << std::endl;
-          return 1;
-        }
-        Tuple int_tuple{i};
+  for(char* token = strtok(str, " "); token != NULL; token = strtok(NULL, " ")) {
+
+    std::string str(token);
+
+    if(str == "-i") {
+
+      try{
+
+        int value = stoi(strtok(NULL, " "));
+        Tuple int_tuple{value};
         ls.write(int_tuple);
-        break;
+
+      } catch (const std::exception &e) {
+
+        std::cout << e.what() << std::endl;
+        return 1;
+
       }
-      case 'f':
-      {
-        char* value = optarg;
-        float f;
-        try {
-          f = stof(value);
-        } catch(const std::exception &e) {
-          std::cout << e.what() << std::endl;
-          return 1;
-        }
-        Tuple float_tuple{f};
+    } else if(str == "-f") {
+
+      try{
+
+        float value = stof(strtok(NULL, " "));
+        Tuple float_tuple{value};
         ls.write(float_tuple);
-        break;
-      }
-      case '?':
-      {
-        if (optopt == 'c')
-          fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-        else if (isprint(optopt))
-          fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-        else
-          fprintf(stderr,"Unknown option character `\\x%x'.\n",optopt);
+
+      } catch (const std::exception &e) {
+
+        std::cout << e.what() << std::endl;
         return 1;
+
       }
-      default:
-      {
-        return 1;
-      }
+
+    } else if(str == "-s") {
+
+      char* value = strtok(NULL, "\'");
+      Tuple string_tuple{value};
+      ls.write(string_tuple);
+
+    } else {
+
+      std::cout << "Unknown type. Expected {[-i integer_value] or [-f float_value] or [-s string_value]}\n";
+      return 1;
+
     }
   }
   return 0;
-}
-
-std::vector<char*> split_arguments(char* first_item, char str[]) {
-  
-  std::vector<char*> words {};
-  words.push_back(first_item);
-  char *token = strtok(str, " ");
-  words.push_back(token);
-
-  while (token != NULL) {
-    
-    token = strtok(NULL, " ");
-    words.push_back(token);
-  }
-  words.pop_back();
-  return words;
 }
 
 int main(int argc, char *argv[]) {
@@ -92,7 +68,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const char *mem_name = "/shm2";
+  const char *mem_name = "/shm3";
   SharedMemoryHandler::SharedMemory* mem;
 
   try {
@@ -124,10 +100,7 @@ int main(int argc, char *argv[]) {
     switch(c) {
       case 'i':
       {
-        std::vector<char*> new_value = split_arguments(argv[0], value);
-        int size = new_value.size();
-        char** new_value2 = &new_value[0];
-        parse_input_data(new_value2, size, ls);
+        parse_arguments(value, ls);
         break;
       }
       case 'r':
