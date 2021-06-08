@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const char *mem_name = "/shm3";
+  const char *mem_name = "/shm16";
   SharedMemoryHandler::SharedMemory* mem;
 
   try {
@@ -134,38 +134,3 @@ int main(int argc, char *argv[]) {
     }
   }
 }
-//   try {
-//     const char *mem_name = "/shm";
-//     SharedMemoryHandler::getInstance()->create(mem_name);
-//     char data[10 * 128];
-//     memset(data, 0, sizeof(data));
-//     LindaTuples l;
-//     l.output({0, 1.f, "kupa", -2});
-//     l.output({"dupa", -2, "papuga"});
-//     // l.output({});
-//     l.output({""});
-//     l.serialize(data, 0);
-//     l.deserialize(data);
-//     std::cout << std::endl << (int)l.getTuplesAmount() << std::endl;
-//   } catch (const std::exception &e) {
-//     std::cout << e.what() << std::endl;
-//   } catch (const char *e) {
-//     std::cout << e << std::endl;
-//   } catch (...) {
-//     std::cout << "ERROR";
-//   }
-
-  // LindaSpace ls(true);
-  // Tuple testTuple{1};
-  // LindaRegex regex1("int:==1");
-  // RegexTuple testRegexTuple{regex1};
-  // std::thread t3(&LindaSpace::remove, &ls, testRegexTuple);
-  // std::thread t2(&LindaSpace::write, &ls, testTuple);
-  // sleep(2);
-  // std::thread t1(&LindaSpace::read, &ls, testRegexTuple);
-  // std::thread t4(&LindaSpace::write, &ls, testTuple);
-
-  // t1.join();
-  // t2.join();
-  // t3.join();
-  // t4.join();

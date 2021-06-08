@@ -28,7 +28,9 @@ private:
 
     void notify_waiting_for_changes()
     {
-        pthread_cond_broadcast(cond_waiting_for_changes);
+        if(pthread_cond_broadcast(cond_waiting_for_changes) != 0){
+            std::cout << "bad_brodcast\n";
+        }
     }
 
     bool search_for_data(const RegexTuple &tuple)
@@ -88,8 +90,7 @@ public:
             if (sem_trywait(sem_counting_readers))
                 cout << "ERROR 1\n";
 
-            pthread_cond_wait(cond_waiting_for_changes,
-                              mutex_waiting_for_changes);
+            pthread_cond_wait(cond_waiting_for_changes,mutex_waiting_for_changes);
             sem_wait(sem_is_resource_reserved);
             sem_post(sem_counting_readers);
             sem_post(sem_is_resource_reserved);

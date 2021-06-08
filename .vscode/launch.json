@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/LINDA",
-            "args": ["-i", "-i 10"],
+            "args": ["-o", "int:==10"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [{ "name": "config", "value": "Debug" }],
