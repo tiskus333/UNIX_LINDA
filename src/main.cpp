@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  const char *mem_name = "/shm16";
+  const char *mem_name = "/shm21";
   SharedMemoryHandler::SharedMemory* mem;
 
   try {

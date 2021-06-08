@@ -104,6 +104,8 @@ public:
         if (sem_trywait(sem_counting_readers))
             cout
                 << "ERROR 2\n";
+                
+        pthread_mutex_unlock(mutex_waiting_for_changes);
 
         return result;
     }
@@ -139,6 +141,8 @@ public:
         tuples.serialize(space, space_size);
 
         sem_post(sem_is_resource_reserved);
+
+        pthread_mutex_unlock(mutex_waiting_for_changes);
     }
 };
 
