@@ -52,6 +52,7 @@ private:
 
 public:
     LindaSpace(bool debug);
+    LindaSpace(char* mem, sem_t* sem_is_resource_reserved, sem_t* sem_counting_readers, pthread_cond_t* cond_waiting_for_changes, pthread_mutex_t* mutex_waiting_for_c);
     ~LindaSpace();
 
     void write(const Tuple &tuple)
@@ -153,6 +154,17 @@ LindaSpace::LindaSpace(bool debug = false)
 
     sem_init(sem_is_resource_reserved, 0, 1);
     sem_init(sem_counting_readers, 0, 0);
+}
+
+LindaSpace::LindaSpace(char* mem, sem_t* sem_is_resource_r, sem_t* sem_counting_r, pthread_cond_t* cond_waiting_for_c, pthread_mutex_t* mutex_waiting_for_c)
+{
+
+    space = mem;
+    space_size = MAX_TUPLE_NUMBER * MAX_TUPLE_SIZE;
+    sem_is_resource_reserved = sem_is_resource_r;
+    sem_counting_readers = sem_counting_r;
+    cond_waiting_for_changes = cond_waiting_for_c;
+    mutex_waiting_for_changes = mutex_waiting_for_c;
 }
 
 LindaSpace::~LindaSpace()

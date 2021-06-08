@@ -120,6 +120,7 @@ bool LindaTuples::deserialize(const char *address) {
 
 bool LindaTuples::serialize(char *const data, size_t max_size) {
   int offset = -1;
+  memset(data, 0, MAX_TUPLE_SIZE * MAX_TUPLE_NUMBER);
   for (const auto &t : tuples_) {
     if (++offset >= MAX_TUPLE_NUMBER)
       break;
