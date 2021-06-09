@@ -64,7 +64,7 @@ int parse_arguments2(char str[], LindaSpace ls) {
 
     std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
     return 1;
-    
+
   }
 }
 
@@ -106,13 +106,17 @@ int main(int argc, char *argv[]) {
   LindaSpace ls(mem->tupleSpace, &mem->sem_is_resource_reserved, &mem->sem_counting_readers, &mem->cond_waiting_for_changes, &mem->mutex_waiting_for_changes);
   
   for(int c = getopt(argc, argv, "i:r:o:"); c != -1; c = getopt(argc, argv, "i:r:o:")) {
+
     char* value = optarg;
+
     switch(c) {
+
       case 'i':
       {
         parse_arguments2(value, ls);
         break;
       }
+
       case 'r':
       {
         LindaRegex regex(value);
@@ -120,6 +124,7 @@ int main(int argc, char *argv[]) {
         ls.remove(tuple);
         break;
       }
+
       case 'o':
       {
         LindaRegex regex(value);
@@ -127,16 +132,21 @@ int main(int argc, char *argv[]) {
         ls.read(tuple);
         break;
       }
+
       case '?':
       {
         if (optopt == 'c')
           fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+
         else if (isprint(optopt))
           fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+
         else
           fprintf(stderr,"Unknown option character `\\x%x'.\n",optopt);
+          
         return 1;
       }
+
       default:
       {
         return 1;
