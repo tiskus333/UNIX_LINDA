@@ -139,14 +139,23 @@ int main(int argc, char *argv[]) {
 
       case '?':
       {
-        if (optopt == 'c')
+        if (optopt == 'c') {
+          
           fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+        }
 
-        else if (isprint(optopt))
+        else if (isprint(optopt)) {
+          
           fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+        }
 
-        else
+        else {
+          
           fprintf(stderr,"Unknown option character `\\x%x'.\n",optopt);
+          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+        }
 
         return 1;
       }
