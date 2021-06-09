@@ -70,7 +70,7 @@ int parse_arguments(char str[], LindaSpace ls) {
 
 int main(int argc, char *argv[]) {
 
-  const char *mem_name = "/shm21";
+  const char *mem_name = "/shm30";
   SharedMemoryHandler::SharedMemory* mem;
 
   try {
@@ -125,7 +125,18 @@ int main(int argc, char *argv[]) {
       {
         LindaRegex regex(value);
         RegexTuple tuple{regex};
-        ls.remove(tuple);
+
+        try{
+
+        ls.remove(tuple, 10);
+
+        } catch (const std::exception &e) {
+
+          std::cout << e.what() << std::endl;
+          return 1;
+
+        }
+        
         break;
       }
 
@@ -133,7 +144,18 @@ int main(int argc, char *argv[]) {
       {
         LindaRegex regex(value);
         RegexTuple tuple{regex};
-        ls.read(tuple);
+        
+        try{
+
+        ls.read(tuple, 10);
+
+        } catch (const std::exception &e) {
+
+          std::cout << e.what() << std::endl;
+          return 1;
+
+        }
+        
         break;
       }
 
