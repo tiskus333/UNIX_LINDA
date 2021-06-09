@@ -69,8 +69,7 @@ public:
         while (readers_left != 0)
         {
             if (debug)
-                cout << "sleeping in write\n";
-            sleep(1);
+                cout << "waiting in write, readers_left: " << readers_left << "\n";
             sem_getvalue(sem_counting_readers, &readers_left);
         }
         save_data(tuple);
@@ -121,8 +120,7 @@ public:
         while (readers_left != 0)
         {
             if (debug)
-                cout << "sleeping in remove\n";
-            sleep(1); //TODO remove sleeps
+                cout << "waiting in remove, readers_left: " << readers_left << "\n";
             sem_getvalue(sem_counting_readers, &readers_left);
         }
 
