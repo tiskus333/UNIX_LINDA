@@ -10,63 +10,65 @@
 #include <string>
 #include <vector>
 
-int parse_arguments(char str[], LindaSpace ls) {
+int parse_arguments2(char str[], LindaSpace ls) {
 
-  for(char* token = strtok(str, " "); token != NULL; token = strtok(NULL, " ")) {
+  char* token = strtok(str, ":");
+  std::string str_type(token);
 
-    std::string str(token);
+  if(str_type == "int") {
+    
+    int value = 0;
 
-    if(str == "-i") {
+    try{
 
-      try{
+      value = stoi(strtok(NULL, " "));
 
-        int value = stoi(strtok(NULL, " "));
-        Tuple int_tuple{value};
-        ls.write(int_tuple);
+    } catch (const std::exception &e) {
 
-      } catch (const std::exception &e) {
-
-        std::cout << e.what() << std::endl;
-        return 1;
-
-      }
-    } else if(str == "-f") {
-
-      try{
-
-        float value = stof(strtok(NULL, " "));
-        Tuple float_tuple{value};
-        ls.write(float_tuple);
-
-      } catch (const std::exception &e) {
-
-        std::cout << e.what() << std::endl;
-        return 1;
-
-      }
-
-    } else if(str == "-s") {
-
-      char* value = strtok(NULL, "\'");
-      Tuple string_tuple{value};
-      ls.write(string_tuple);
-
-    } else {
-
-      std::cout << "Unknown type. Expected {[-i integer_value] or [-f float_value] or [-s string_value]}\n";
+      std::cout << e.what() << std::endl;
       return 1;
 
     }
+    
+    Tuple int_tuple{value};
+    ls.write(int_tuple);
+    return 0;
+
+  } else if(str_type == "float") {
+
+    float value = 0;
+
+    try{
+
+      value = stof(strtok(NULL, " "));
+
+    } catch (const std::exception &e) {
+
+      std::cout << e.what() << std::endl;
+      return 1;
+
+    }
+
+    Tuple float_tuple{value};
+    ls.write(float_tuple);
+    return 0;
+
+  } else if(str_type == "string") {
+
+    char* value = strtok(NULL, "\"");
+    Tuple string_tuple{value};
+    ls.write(string_tuple);
+    return 0;
+
+  } else {
+
+    std::cout << "Unknown type. Expected {[int - integer_value] or [float - float_value] or [string - string_value]}\n";
+    std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+    return 1;
   }
-  return 0;
 }
 
 int main(int argc, char *argv[]) {
-
-  if(argc != 3) {
-    std::cout << "Exactly one flag and argument are requiered";
-    return 1;
-  }
 
   const char *mem_name = "/shm21";
   SharedMemoryHandler::SharedMemory* mem;
@@ -90,17 +92,18 @@ int main(int argc, char *argv[]) {
     } catch (...) {
       std::cout << "ERROR";
     }
- }
+  }
 
-  int c;
+
   LindaSpace ls(mem->tupleSpace, &mem->sem_is_resource_reserved, &mem->sem_counting_readers, &mem->cond_waiting_for_changes, &mem->mutex_waiting_for_changes);
 
-  while((c = getopt(argc, argv, "i:r:o:")) != -1) {
+  
+  for(int c = getopt(argc, argv, "i:r:o:"); c != -1; c = getopt(argc, argv, "i:r:o:")) {
     char* value = optarg;
     switch(c) {
       case 'i':
       {
-        parse_arguments(value, ls);
+        parse_arguments2(value, ls);
         break;
       }
       case 'r':
