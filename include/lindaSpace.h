@@ -59,8 +59,8 @@ public:
 
     void write(const Tuple &tuple)
     {
-
         sem_wait(sem_is_resource_reserved);
+       
         int readers_left;
         sem_getvalue(sem_counting_readers, &readers_left);
         while (readers_left != 0)
@@ -77,7 +77,7 @@ public:
         sem_post(sem_is_resource_reserved);
     }
 
-    Tuple read(const RegexTuple &regex)
+    Tuple read(const RegexTuple &regex, int timeout)
     {
 
         sem_wait(sem_is_resource_reserved);
@@ -90,7 +90,22 @@ public:
             if (sem_trywait(sem_counting_readers))
                 cout << "ERROR 1\n";
 
-            pthread_cond_wait(cond_waiting_for_changes,mutex_waiting_for_changes);
+            struct timespec ts;
+            if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+                perror("clock_gettime");
+                exit(EXIT_FAILURE);
+            }
+            ts.tv_sec += timeout;
+            
+            int rc = pthread_cond_timedwait(cond_waiting_for_changes,
+                              mutex_waiting_for_changes, &ts);
+
+            if (rc == ETIMEDOUT) {
+
+                pthread_mutex_unlock(mutex_waiting_for_changes);
+                throw std::runtime_error("Timeout");
+            }
+
             sem_wait(sem_is_resource_reserved);
             sem_post(sem_counting_readers);
             sem_post(sem_is_resource_reserved);
@@ -110,7 +125,7 @@ public:
         return result;
     }
 
-    void remove(const RegexTuple &regex)
+    void remove(const RegexTuple &regex, int timeout)
     {
         sem_wait(sem_is_resource_reserved);
         int readers_left;
@@ -129,8 +144,22 @@ public:
         {
             sem_post(sem_is_resource_reserved);
 
-            pthread_cond_wait(cond_waiting_for_changes,
-                              mutex_waiting_for_changes);
+            struct timespec ts;
+            if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
+                perror("clock_gettime");
+                exit(EXIT_FAILURE);
+            }
+            ts.tv_sec += timeout;
+
+            int rc = pthread_cond_timedwait(cond_waiting_for_changes,
+                              mutex_waiting_for_changes, &ts);
+
+            if (rc == ETIMEDOUT) {
+
+                pthread_mutex_unlock(mutex_waiting_for_changes);
+                throw std::runtime_error("Timeout");
+            } 
+
             sem_wait(sem_is_resource_reserved);
 
             found_searched_element = search_for_data(regex);
