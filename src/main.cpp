@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-int parse_arguments2(char str[], LindaSpace ls) {
+int parse_arguments(char str[], LindaSpace ls) {
 
   char* token = strtok(str, ":");
   std::string str_type(token);
@@ -74,7 +74,9 @@ int main(int argc, char *argv[]) {
   SharedMemoryHandler::SharedMemory* mem;
 
   try {
+
     mem = SharedMemoryHandler::getInstance()->open(mem_name);
+
   } catch (const char *e) {
 
     try{
@@ -113,7 +115,9 @@ int main(int argc, char *argv[]) {
 
       case 'i':
       {
-        parse_arguments2(value, ls);
+        if(parse_arguments(value, ls))
+          return 1;
+        
         break;
       }
 
@@ -143,7 +147,7 @@ int main(int argc, char *argv[]) {
 
         else
           fprintf(stderr,"Unknown option character `\\x%x'.\n",optopt);
-          
+
         return 1;
       }
 
