@@ -43,7 +43,10 @@ private:
     void save_data(const Tuple &tuple)
     {
         if (debug)
-            cout << "writing \n"; //TODO add printing tuples
+        {
+            cout << "writing tuple: ";
+            printTuple(tuple);
+        }
         if (!tuples.deserialize(space))
             throw "Tuple not properly deserialized ";
         if (!tuples.output(tuple))
