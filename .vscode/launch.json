@@ -9,12 +9,33 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/LINDA",
-            "args": [],
+            "args": ["-r", "int:==10"],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [{ "name": "config", "value": "Debug" }],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "build",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/LINDA",
+            "args": ["-r", "int:==1"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
+            "preLaunchTask": "build",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

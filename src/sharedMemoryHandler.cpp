@@ -24,11 +24,12 @@ void SharedMemoryHandler::create(const char *name) {
   if (shmMapped == MAP_FAILED) {
     throw "Cannot map memory";
   }
-  if (sem_init(&shmMapped->sem_is_resource_reserved, 1, 0) == -1) {
+
+  if (sem_init(&shmMapped->sem_is_resource_reserved, 1, 1) == -1) {
     throw "Cannot init sem_is_resource_reserved";
   }
 
-  if (sem_init(&shmMapped->sem_counting_readers, 1, 1) == -1) {
+  if (sem_init(&shmMapped->sem_counting_readers, 1, 0) == -1) {
     throw "Cannot init sem_counting_readers";
   }
 
@@ -39,11 +40,23 @@ void SharedMemoryHandler::create(const char *name) {
                                   PTHREAD_PROCESS_SHARED) != 0)
     throw "Cannot share conditional variable";
 
-  shmMapped->cond_waiting_for_changes = new pthread_cond_t;
-  if (pthread_cond_init(shmMapped->cond_waiting_for_changes,
+  if (pthread_cond_init(&shmMapped->cond_waiting_for_changes,
                         &shmMapped->attrcond) != 0)
     throw "Cannot init conditional variable";
 
+  //shmMapped->cond_waiting_for_changes = PTHREAD_COND_INITIALIZER;
+
+  if(pthread_mutexattr_init(&shmMapped->attrmutex) != 0)
+    throw "Cannot init mutex attribute";
+ 
+  if (pthread_mutexattr_setpshared(&shmMapped->attrmutex,
+                                  PTHREAD_PROCESS_SHARED) != 0)
+    throw "Cannot share mutex";
+
+  if(pthread_mutex_init(&shmMapped->mutex_waiting_for_changes, &shmMapped->attrmutex) != 0)
+    throw "Cannot init mutex";
+    
+  //shmMapped->mutex_waiting_for_changes = PTHREAD_MUTEX_INITIALIZER;
   /* Clean up. */
   // pthread_cond_destroy(cond_waiting_for_changes);
   // pthread_condattr_destroy(&attrcond);

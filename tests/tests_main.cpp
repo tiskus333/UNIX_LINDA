@@ -243,22 +243,33 @@ BOOST_AUTO_TEST_CASE(TestOutputFittingRegexOnlyPartly_SameTypes){
     BOOST_CHECK(tuples.getTuplesAmount() == (size_t)1);
 }
 
-BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(30))
-{
+BOOST_AUTO_TEST_CASE(TestWriteremove){
+
     LindaSpace ls(true);
     Tuple testTuple{1};
     LindaRegex regex1("int:==1");
     RegexTuple testRegexTuple{regex1};
-    std::thread t3(&LindaSpace::remove, &ls, testRegexTuple);
-    std::thread t2(&LindaSpace::write, &ls, testTuple);
-    sleep(2);
-    std::thread t1(&LindaSpace::read, &ls, testRegexTuple);
-    std::thread t4(&LindaSpace::write, &ls, testTuple);
 
-    t1.join();
-    t2.join();
-    t3.join();
-    t4.join();
+    ls.write(testTuple);
+    ls.read(testRegexTuple);
 }
+
+// BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(30))
+// {
+//     LindaSpace ls(true);
+//     Tuple testTuple{1};
+//     LindaRegex regex1("int:==1");
+//     RegexTuple testRegexTuple{regex1};
+//     std::thread t3(&LindaSpace::remove, &ls, testRegexTuple);
+//     std::thread t2(&LindaSpace::write, &ls, testTuple);
+//     sleep(2);
+//     std::thread t1(&LindaSpace::read, &ls, testRegexTuple);
+//     std::thread t4(&LindaSpace::write, &ls, testTuple);
+
+//     t1.join();
+//     t2.join();
+//     t3.join();
+//     t4.join();
+// }
 
 BOOST_AUTO_TEST_SUITE_END()
