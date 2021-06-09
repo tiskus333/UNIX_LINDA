@@ -29,7 +29,7 @@ int parse_arguments2(char str[], LindaSpace ls) {
       return 1;
 
     }
-    
+
     Tuple int_tuple{value};
     ls.write(int_tuple);
     return 0;
@@ -62,9 +62,9 @@ int parse_arguments2(char str[], LindaSpace ls) {
 
   } else {
 
-    std::cout << "Unknown type. Expected {[int - integer_value] or [float - float_value] or [string - string_value]}\n";
     std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
     return 1;
+    
   }
 }
 
@@ -86,17 +86,24 @@ int main(int argc, char *argv[]) {
       mem = SharedMemoryHandler::getInstance()->open(mem_name);
 
     } catch (const std::exception &e) {
+
       std::cout << e.what() << std::endl;
+      return 1;
+
     } catch (const char *e) {
+
       std::cout << e << std::endl;
+      return 1;
+
     } catch (...) {
+
       std::cout << "ERROR";
+      return 1;
+
     }
   }
 
-
   LindaSpace ls(mem->tupleSpace, &mem->sem_is_resource_reserved, &mem->sem_counting_readers, &mem->cond_waiting_for_changes, &mem->mutex_waiting_for_changes);
-
   
   for(int c = getopt(argc, argv, "i:r:o:"); c != -1; c = getopt(argc, argv, "i:r:o:")) {
     char* value = optarg;
