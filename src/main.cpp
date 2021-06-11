@@ -10,67 +10,73 @@
 #include <string>
 #include <vector>
 
-int parse_arguments(char str[], LindaSpace ls) {
+Tuple parse_args(std::string str_values, LindaSpace ls) {
+  std::vector<std::string> values;
 
-  char* token = strtok(str, ":");
-  std::string str_type(token);
-
-  if(str_type == "int") {
+  for(auto token = str_values.substr(0, str_values.find(",")); token != ""; token = str_values.substr(0, str_values.find(","))) {
     
-    int value = 0;
+    values.push_back(token);
 
-    try{
-
-      value = stoi(strtok(NULL, " "));
-
-    } catch (const std::exception &e) {
-
-      std::cout << e.what() << std::endl;
-      return 1;
-
-    }
-
-    Tuple int_tuple{value};
-    ls.write(int_tuple);
-    return 0;
-
-  } else if(str_type == "float") {
-
-    float value = 0;
-
-    try{
-
-      value = stof(strtok(NULL, " "));
-
-    } catch (const std::exception &e) {
-
-      std::cout << e.what() << std::endl;
-      return 1;
-
-    }
-
-    Tuple float_tuple{value};
-    ls.write(float_tuple);
-    return 0;
-
-  } else if(str_type == "string") {
-
-    char* value = strtok(NULL, "\"");
-    Tuple string_tuple{value};
-    ls.write(string_tuple);
-    return 0;
-
-  } else {
-
-    std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
-    return 1;
-
+    if(str_values.find(",") != std::string::npos)
+      str_values.erase(0, str_values.find(",") + 1);
+    else
+      str_values = "";
   }
+
+  Tuple tuple;
+
+  for(auto value : values) {
+
+    std::string str_type = value.substr(0, value.find(":"));
+    std::string str_value = value.substr(value.find(":") + 1, value.length());
+
+    if(str_type == "int") {
+      
+      try{
+
+        int v = stoi(str_value);
+        tuple.push_back(v);
+
+      } catch (const std::exception &e) {
+
+        std::cout << e.what() << std::endl;
+        throw e;
+
+      }
+
+    } else if(str_type == "float") {
+
+      try{
+
+        float v = stof(str_value);
+        tuple.push_back(v);
+
+      } catch (const std::exception &e) {
+
+        std::cout << e.what() << std::endl;
+        throw e;
+
+      }
+
+    } else if(str_type == "string") {
+      
+      str_value.erase(remove( str_value.begin(), str_value.end(), '\'' ),str_value.end());
+      tuple.push_back(str_value);
+
+    } else {
+
+      std::cout << "Syntax: ./executable -o {(int | float | string):(value | \'string_value\'),} | (-r | -i) \"regex_string\" \n";
+      throw exception();
+    }
+  }
+
+  ls.write(tuple);
+  return tuple;
 }
 
 int main(int argc, char *argv[]) {
 
-  const char *mem_name = "/shm30";
+  const char *mem_name = "/shm31";
   SharedMemoryHandler::SharedMemory* mem;
 
   try {
@@ -106,56 +112,83 @@ int main(int argc, char *argv[]) {
   }
 
   LindaSpace ls(mem->tupleSpace, &mem->sem_is_resource_reserved, &mem->sem_counting_readers, &mem->cond_waiting_for_changes, &mem->mutex_waiting_for_changes);
-  
-  for(int c = getopt(argc, argv, "i:r:o:"); c != -1; c = getopt(argc, argv, "i:r:o:")) {
+  int o_flag = 0;
+  int i_flag = 0;
+  int r_flag = 0;
+  int t_flag = 0;
+  Tuple temp;
+  RegexTuple r_temp;
+  int timeout = 10;
 
-    char* value = optarg;
+
+  for(int c = getopt(argc, argv, "i:r:o:t:"); c != -1; c = getopt(argc, argv, "i:r:o:t:")) {
+
+    std::string str_values(optarg);
+    
 
     switch(c) {
 
+      case 'o':
+      {
+        if(o_flag || i_flag || r_flag) {
+
+          std::cout << "Można podać tylko jedną akcję na raz\n";
+          return 1;
+        }
+          
+        try {
+          temp = parse_args(str_values, ls);
+        } catch (const char *e) {
+          return 1;
+        } 
+        
+        o_flag = 1;
+        break;
+      }
+
       case 'i':
       {
-        if(parse_arguments(value, ls))
+        if(o_flag || i_flag || r_flag) {
+
+          std::cout << "Można podać tylko jedną akcję na raz\n";
           return 1;
+        }
+
+        LindaRegex regex(optarg);
+        RegexTuple tuple{regex};
+
+        r_temp = tuple;
         
+        i_flag = 1;
         break;
       }
 
       case 'r':
       {
-        LindaRegex regex(value);
-        RegexTuple tuple{regex};
+        if(o_flag || i_flag || r_flag) {
 
-        try{
-
-        ls.remove(tuple, 10);
-
-        } catch (const std::exception &e) {
-
-          std::cout << e.what() << std::endl;
+          std::cout << "Można podać tylko jedną akcję na raz\n";
           return 1;
-
         }
+
+        LindaRegex regex(optarg);
+        RegexTuple tuple{regex};
         
+        r_temp = tuple;
+        
+        r_flag = 1;
         break;
       }
 
-      case 'o':
+      case 't':
       {
-        LindaRegex regex(value);
-        RegexTuple tuple{regex};
-        
-        try{
+        if(t_flag) {
 
-        ls.read(tuple, 10);
-
-        } catch (const std::exception &e) {
-
-          std::cout << e.what() << std::endl;
+          std::cout << "Można podać timeout tylko raz\n"; 
           return 1;
-
         }
         
+        timeout = stoi(optarg);
         break;
       }
 
@@ -164,19 +197,19 @@ int main(int argc, char *argv[]) {
         if (optopt == 'c') {
           
           fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+          std::cout << "Syntax: ./executable -o {(int | float | string):(value | \'string_value\'),} | (-r | -i) \"regex_string\" \n";
         }
 
         else if (isprint(optopt)) {
           
           fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+          std::cout << "Syntax: ./executable -o {(int | float | string):(value | \'string_value\'),} | (-r | -i) \"regex_string\" \n";
         }
 
         else {
           
           fprintf(stderr,"Unknown option character `\\x%x'.\n",optopt);
-          std::cout << "Syntax: ./executable {-i (int | float | string):(value | \"string_value\") | (-r | -o) \"regex_string\"} \n";
+          std::cout << "Syntax: ./executable -o {(int | float | string):(value | \'string_value\'),} | (-r | -i) \"regex_string\" \n";
         }
 
         return 1;
@@ -188,4 +221,45 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+
+  if(o_flag) {
+
+    try {
+
+      ls.write(temp);
+
+    } catch (const std::exception &e) {
+
+        std::cout << e.what() << std::endl;
+        return 1;
+
+    } 
+
+  } else if(i_flag) {
+
+    try {
+
+      ls.remove(r_temp, timeout);
+
+    } catch (const std::exception &e) {
+
+      std::cout << e.what() << std::endl;
+      return 1;
+
+    }
+
+  } else if(r_flag) {
+
+    try {
+
+      ls.read(r_temp, timeout);
+
+    } catch (const std::exception &e) {
+
+      std::cout << e.what() << std::endl;
+      return 1;
+
+    } 
+  }
+  return 0;
 }

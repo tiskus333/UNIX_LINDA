@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(TestWriteremove){
     RegexTuple testRegexTuple{regex1};
 
     ls.write(testTuple);
-    ls.read(testRegexTuple);
+    // ls.read(testRegexTuple);
 }
 
 // BOOST_AUTO_TEST_CASE(TestLindaSpace, *boost::unit_test::timeout(30))
